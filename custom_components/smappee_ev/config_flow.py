@@ -205,7 +205,10 @@ class SmappeeEvConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             "uuid": station["uuid"],
         }
 
-        await self.async_set_unique_id(station["uuid"])
+        # Use service location UUID + station UUID to allow multiple charging stations
+        # This prevents "already_configured" error when adding multiple stations
+        unique_id = f"{selected_location['serviceLocationUuid']}_{station['uuid']}"
+        await self.async_set_unique_id(unique_id)
         self._abort_if_unique_id_configured()
 
         return self.async_create_entry(
